@@ -145,19 +145,19 @@ def graficos_histograma():
     plt.figure(figsize=(15, 10))
     
     plt.subplot(2, 3, 1)
-    sns.histplot(dados_csv['Age'], bins=20, kde=True, color='skyblue')
+    sns.histplot(dados_csv['Age'], bins=20, kde=False, color='skyblue')
     plt.title("Distribuição da Idade dos Passageiros")
     plt.xlabel("Idade")
     plt.ylabel("Frequência")
     
     plt.subplot(2, 3, 2)
-    sns.histplot(dados_csv['Fare'], bins=20, kde=True, color='lightcoral')
+    sns.histplot(dados_csv['Fare'], bins=20, kde=False, color='lightcoral')
     plt.title("Distribuição das Tarifas")
     plt.xlabel("Tarifa")
     plt.ylabel("Frequência")
     
     plt.subplot(2, 3, 3)
-    sns.histplot(dados_csv['FamilySize'], bins=10, kde=True, color='lightgreen')
+    sns.histplot(dados_csv['FamilySize'], bins=10, kde=False, color='lightgreen')
     plt.title("Distribuição do Tamanho da Família")
     plt.xlabel("Tamanho da Família")
     plt.ylabel("Frequência")
@@ -241,27 +241,6 @@ def graficos_boxplot():
     sns.boxplot(x='Pclass', y='Fare', data=dados_csv, showfliers=False)
     plt.title("Boxplot de Tarifa por Classe")
     plt.xlabel("Classe")
-    
-    plt.tight_layout()
-    plt.show()
-
-def graficos_dispersao():
-    plt.figure(figsize=(15, 5))
-    
-    plt.subplot(1, 3, 1)
-    cores = ['red' if x == 0 else 'green' for x in dados_csv['Survived']]
-    plt.scatter(dados_csv['Age'], dados_csv['Fare'], c=cores, alpha=0.6)
-    plt.xlabel('Idade')
-    plt.ylabel('Tarifa')
-    plt.title('Dispersão: Idade vs Tarifa (Vermelho: Morto, Verde: Sobreviveu)')
-    
-    plt.subplot(1, 3, 2)
-    sns.scatterplot(data=dados_csv, x='Age', y='Fare', hue='Pclass')
-    plt.title('Dispersão: Idade vs Tarifa por Classe')
-    
-    plt.subplot(1, 3, 3)
-    sns.scatterplot(data=dados_csv, x='FamilySize', y='Fare', hue='Survived')
-    plt.title('Dispersão: Tamanho da Família vs Tarifa')
     
     plt.tight_layout()
     plt.show()
@@ -388,14 +367,10 @@ def menu():
             graficos_boxplot()
             print(f"\n{Cores.VERDE}\tGráfico(s) plotado(s) com sucesso!{Cores.RESET}")
         elif opcao == "5":
-            print(f"\n{Cores.ROSA}\tPlotando gráficos de dispersão...{Cores.RESET}")
-            graficos_dispersao()
-            print(f"\n{Cores.VERDE}\tGráfico(s) plotado(s) com sucesso!{Cores.RESET}")
-        elif opcao == "6":
             print(f"\n{Cores.ROSA}\tAnalisando padrões de sobrevivência...{Cores.RESET}")
             analise_padroes_sobrevivencia()
             print(f"\n{Cores.VERDE}\tAnálise concluída com sucesso!{Cores.RESET}")
-        elif opcao == "7":
+        elif opcao == "6":
             print(f"\n{Cores.ROSA}\tAnalisando impacto das variáveis...{Cores.RESET}")
             grafico_impacto_variaveis()
             print(f"\n{Cores.VERDE}\tAnálise concluída com sucesso!{Cores.RESET}")
