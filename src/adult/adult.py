@@ -39,7 +39,7 @@ def tratar_outliers(dados, coluna):
 
 # Lendo a base de dados
 
-dados_csv = pd.read_csv('src/adult.csv')
+dados_csv = pd.read_csv('adult.csv')
 
 dados_csv.replace('?', np.nan, inplace=True)
 dados_csv.dropna(inplace=True)
@@ -113,7 +113,7 @@ def graficos_barras_agrupadas():
 
     # Contagem por sexo e renda
     sns.countplot(data=dados_csv, x='gender', hue='income', palette=palette_contraste, ax=axs[0])
-    axs[0].set_title("Contagem por Sexo e Renda")
+    axs[0].set_title("Renda por Sexo")
     axs[0].set_xlabel("Sexo")
     axs[0].set_ylabel("Número de Pessoas")
     axs[0].legend(title="Renda")  # legenda ajustada
@@ -172,22 +172,9 @@ def graficos_linhas():
     renda_classes = dados_csv['income'].unique()
     cores_renda = {"<=50K": "#1f77b4", ">50K": "#ff7f0e"}  # cores por renda
 
-    fig, axs = plt.subplots(2, 2, figsize=(14, 9))  # 2x2 subplots
+    fig, axs = plt.subplots(1, 3, figsize=(18, 6))  # 1x3 subplots para organização lado a lado
 
-    # 1. Distribuição de Pessoas por Faixa de Idade e Renda
-    idade_bins = range(int(dados_csv['age'].min()), int(dados_csv['age'].max()) + 5, 5)
-    for income in renda_classes:
-        subset = dados_csv[dados_csv['income'] == income]
-        counts, bins = np.histogram(subset['age'], bins=idade_bins)
-        axs[0, 0].plot(bins[:-1], counts, marker='o', label=f'{income}', color=cores_renda[income])
-
-    axs[0, 0].set_title("Distribuição de Pessoas por Faixa de Idade e Renda")
-    axs[0, 0].set_xlabel("Idade")
-    axs[0, 0].set_ylabel("Número de Pessoas")
-    axs[0, 0].grid(True, linestyle='--', alpha=0.5)
-    axs[0, 0].legend(loc='upper right')
-
-    # 2. Distribuição de Renda por Nível de Escolaridade
+    # 1. Distribuição de Renda por Nível de Escolaridade
     escolaridade_map = {
         1: "Pré-escola", 2: "1º-4º", 3: "5º-6º", 4: "7º-8º",
         5: "9º", 6: "10º", 7: "11º", 8: "12º", 9: "Ensino Médio",
@@ -200,51 +187,89 @@ def graficos_linhas():
     for income in renda_classes:
         subset = dados_csv[dados_csv['income'] == income]
         counts = subset.groupby('educational-num').size().reindex(escolaridade_ordem, fill_value=0)
-        axs[0, 1].plot(escolaridade_ordem, counts, marker='o', color=cores_renda[income], label=income)
+        axs[0].plot(escolaridade_ordem, counts, marker='o', color=cores_renda[income], label=income)
 
-    axs[0, 1].set_title("Distribuição de Renda por Nível de Escolaridade")
-    axs[0, 1].set_xlabel("Código da Escolaridade")
-    axs[0, 1].set_ylabel("Número de Pessoas")
-    axs[0, 1].set_xticks(escolaridade_ordem)
-    axs[0, 1].grid(True, linestyle='--', alpha=0.5)
+    axs[0].set_title("Distribuição de Renda por Nível de Escolaridade")
+    axs[0].set_xlabel("Código da Escolaridade")
+    axs[0].set_ylabel("Número de Pessoas")
+    axs[0].set_xticks(escolaridade_ordem)
+    axs[0].grid(True, linestyle='--', alpha=0.5)
 
     # Legenda de renda (cores das linhas) - canto superior direito
-    legenda_renda = axs[0, 1].legend(loc='upper right', fontsize=9)
-    axs[0, 1].add_artist(legenda_renda)  # mantém a legenda ativa
+    legenda_renda = axs[0].legend(loc='upper right', fontsize=9)
+    axs[0].add_artist(legenda_renda)  # mantém a legenda ativa
 
     # Legenda de escolaridade (número → nome) - canto superior esquerdo
     from matplotlib.lines import Line2D
     legend_escolaridade = [Line2D([0], [0], color='black', lw=0, label=f"{k}: {v}") 
                            for k, v in escolaridade_map.items()]
-    axs[0, 1].legend(handles=legend_escolaridade, loc='upper left', fontsize=8, frameon=True)
+    axs[0].legend(handles=legend_escolaridade, loc='upper left', fontsize=8, frameon=True)
 
-    # 3. Distribuição de Renda por Faixa Etária (grupos de 10 anos)
+    # 2. Distribuição de Renda por Faixa Etária (grupos de 10 anos)
     idade_bins_10 = range(0, 101, 10)
     idade_labels = [f"{i}-{i+9}" for i in idade_bins_10[:-1]]
     for income in renda_classes:
         subset = dados_csv[dados_csv['income'] == income]
         counts, bins = np.histogram(subset['age'], bins=idade_bins_10)
-        axs[1, 0].plot(idade_labels, counts, marker='o', label=f'{income}', color=cores_renda[income])
+        axs[1].plot(idade_labels, counts, marker='o', label=f'{income}', color=cores_renda[income])
 
-    axs[1, 0].set_title("Distribuição de Renda por Faixa Etária")
-    axs[1, 0].set_xlabel("Faixa Etária")
-    axs[1, 0].set_ylabel("Número de Pessoas")
-    axs[1, 0].tick_params(axis='x', rotation=45)
-    axs[1, 0].grid(True, linestyle='--', alpha=0.5)
-    axs[1, 0].legend(loc='upper right')
+    axs[1].set_title("Distribuição de Renda por Faixa Etária")
+    axs[1].set_xlabel("Faixa Etária")
+    axs[1].set_ylabel("Número de Pessoas")
+    axs[1].tick_params(axis='x', rotation=45)
+    axs[1].grid(True, linestyle='--', alpha=0.5)
+    axs[1].legend(loc='upper right')
 
-    # 4. Distribuição de Renda por Tipo de Relacionamento
+    # 3. Distribuição de Renda por Tipo de Relacionamento
     relacionamentos = sorted(dados_csv['relationship'].unique())
+    
+    # Criando um mapeamento numerado para tipos de relacionamento em português
+    relacao_map = {
+        1: 'Marido', 
+        2: 'Não familiar', 
+        3: 'Outro parente',
+        4: 'Filho', 
+        5: 'Não casado', 
+        6: 'Esposa'
+    }
+    
+    # Mapeando os nomes de relacionamento para números
+    relacao_num_map = {
+        'Husband': 1, 
+        'Not-in-family': 2, 
+        'Other-relative': 3,
+        'Own-child': 4, 
+        'Unmarried': 5, 
+        'Wife': 6
+    }
+    
+    # Obtendo a ordem numérica para plotar
+    relacao_ordem = list(relacao_map.keys())
+    
+    # Plot das linhas por renda com label
     for income in renda_classes:
         subset = dados_csv[dados_csv['income'] == income]
-        counts = subset.groupby('relationship').size().reindex(relacionamentos, fill_value=0)
-        axs[1, 1].plot(relacionamentos, counts, marker='o', label=f'{income}', color=cores_renda[income])
+        # Convertendo nomes para números antes de agrupar
+        subset_numerado = subset.copy()
+        subset_numerado['relacao_num'] = subset_numerado['relationship'].map(relacao_num_map)
+        counts = subset_numerado.groupby('relacao_num').size().reindex(relacao_ordem, fill_value=0)
+        axs[2].plot(relacao_ordem, counts, marker='o', label=f'{income}', color=cores_renda[income])
 
-    axs[1, 1].set_title("Distribuição de Renda por Tipo de Relacionamento")
-    axs[1, 1].set_xlabel("Relacionamento")
-    axs[1, 1].set_ylabel("Número de Pessoas")
-    axs[1, 1].grid(True, linestyle='--', alpha=0.5)
-    axs[1, 1].legend(loc='upper right')
+    axs[2].set_title("Distribuição de Renda por Tipo de Relacionamento")
+    axs[2].set_xlabel("Código do Relacionamento")
+    axs[2].set_ylabel("Número de Pessoas")
+    axs[2].set_xticks(relacao_ordem)
+    axs[2].grid(True, linestyle='--', alpha=0.5)
+    
+    # Legenda de renda (cores das linhas) - canto superior direito
+    legenda_renda = axs[2].legend(loc='upper right', fontsize=9)
+    axs[2].add_artist(legenda_renda)  # mantém a legenda ativa
+
+    # Legenda explicativa de relacionamentos - canto superior esquerdo
+    from matplotlib.lines import Line2D
+    legend_relacionamentos = [Line2D([0], [0], color='black', lw=0, label=f"{k}: {v}") 
+                             for k, v in relacao_map.items()]
+    axs[2].legend(handles=legend_relacionamentos, loc='upper left', fontsize=8, frameon=True)
 
     plt.tight_layout()
     plt.show()
@@ -281,7 +306,7 @@ def menu():
             graficos_boxplot()
         elif opcao == "5":
             print(f"\n{Cores.ROSA}\tPlotando gráfico de impacto das variáveis...{Cores.RESET}")
-            grafico_impacto_variaveis()
+            # grafico_impacto_variaveis()
         elif opcao == "6":
             print(f"\n{Cores.ROSA}\tPlotando gráficos de linhas...{Cores.RESET}")
             graficos_linhas()
